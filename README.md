@@ -1,4 +1,4 @@
-# 🧠 Transformer From Scratch — "Attention Is All You Need"
+# 🧠 Transformer From Scratch — "Attention Is All You Need".
 ### **PositionalEncoding · Multi-Head Attention · Encoder-Decoder** — RNN 없이 Self-Attention 만으로 시퀀스 변환
 
 ![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
