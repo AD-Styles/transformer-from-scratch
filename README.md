@@ -33,7 +33,7 @@
 
 ```text
 ├─ results/                                    
-│  ├─ fig_01_transformer_architecture.png     # Encoder + Decoder 전체 구조도
+│  ├─ fig_01_transformer_architecture.png       # Encoder + Decoder 전체 구조도
 │  ├─ fig_02_qkv_search_engine.png            # Q·K·V 의미 검색 엔진 — Query/Key/Value 세 역할 (보조 도식)
 │  ├─ fig_03_scaled_dot_product_attention.png # Q·K^T → ÷√d_k → softmax → ·V 5단계 수치 예시
 │  ├─ fig_04_multihead_attention.png          # 4 헤드 병렬 + Concat + W^O 흐름도
