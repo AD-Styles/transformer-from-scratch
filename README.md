@@ -19,31 +19,31 @@
 
 ## 🎯 핵심 목표 (Motivation)
 
-| <br/>논문 핵심 메커니즘 &emsp;&emsp;&emsp;&emsp; | 상세 목표 |
-| :--- | :--- |
-| **Self-Attention 으로 장거리 의존성 해결** *(논문 §3.2.1, §4)* | RNN 의 순차 처리(O(n)) 한계를 벗어나 `softmax(Q·K^T / √d_k) · V` 한 식으로 모든 토큰을 동시에 조망. 토큰 간 경로 길이가 O(1) 로 단축돼 아무리 멀리 떨어진 단어라도 즉시 attend 가능 — 논문이 *"RNN/CNN 이 필요 없다"* 는 도발적 주장을 펼 수 있게 한 핵심 기여 |
-| **Multi-Head Attention 으로 부분 공간 분리** *(논문 §3.2.2)* | d_model=64 를 4개 헤드(d_k=16) 로 쪼개 병렬 attention. 헤드마다 다른 부분 공간(subspace) 을 학습해 한 모델이 여러 종류의 관계를 동시에 포착 — *"h heads attend to information from different representation subspaces"* 가 논문이 강조하는 효과 |
-| **Positional Encoding 으로 순서 회복** *(논문 §3.5)* | RNN 이 사라진 자리를 sin/cos 파동의 위치 임베딩으로 메움. 모든 위치가 서로 다른 64차원 벡터를 갖되 **가까운 위치끼리는 부드럽게 변하도록** 차원마다 주기를 다르게 설계 |
-| **Masked Self-Attention 으로 인과 관계 강제** *(논문 §3.2.3)* | 디코더가 학습 시 정답 시퀀스 전체를 받지만 미래 토큰을 미리 보면 안 됨 — `M_ij = -∞ (if i < j)` 으로 가리고 softmax 를 통과시켜 autoregressive 생성을 보장하는 단순하지만 결정적인 트릭 |
-| **Encoder-Decoder 비대칭 구조** *(논문 §3.1)* | Encoder 는 양방향 Self-Attention 으로 입력 전체를 이해하고, Decoder 는 Masked Self-Attention + Cross-Attention 으로 한 토큰씩 출력. 이 비대칭이 후일 **BERT(Encoder-only) 와 GPT(Decoder-only)** 로 갈라지는 출발점 |
+| 논문 § | 핵심 메커니즘 | 상세 목표 |
+| :---: | :--- | :--- |
+| **§3.2.1**<br/>**§4** | **Self-Attention 으로<br/>장거리 의존성 해결** | RNN 의 순차 처리(O(n)) 한계를 벗어나 `softmax(Q·K^T / √d_k) · V` 한 식으로 모든 토큰을 동시에 조망. 토큰 간 경로 길이가 O(1) 로 단축돼 아무리 멀리 떨어진 단어라도 즉시 attend 가능 — 논문이 *"RNN/CNN 이 필요 없다"* 는 도발적 주장을 펼 수 있게 한 핵심 기여 |
+| **§3.2.2** | **Multi-Head Attention 으로<br/>부분 공간 분리** | d_model=64 를 4개 헤드(d_k=16) 로 쪼개 병렬 attention. 헤드마다 다른 부분 공간(subspace) 을 학습해 한 모델이 여러 종류의 관계를 동시에 포착 — *"h heads attend to information from different representation subspaces"* 가 논문이 강조하는 효과 |
+| **§3.5** | **Positional Encoding 으로<br/>순서 회복** | RNN 이 사라진 자리를 sin/cos 파동의 위치 임베딩으로 메움. 모든 위치가 서로 다른 64차원 벡터를 갖되 **가까운 위치끼리는 부드럽게 변하도록** 차원마다 주기를 다르게 설계 |
+| **§3.2.3** | **Masked Self-Attention 으로<br/>인과 관계 강제** | 디코더가 학습 시 정답 시퀀스 전체를 받지만 미래 토큰을 미리 보면 안 됨 — `M_ij = -∞ (if i < j)` 으로 가리고 softmax 를 통과시켜 autoregressive 생성을 보장하는 단순하지만 결정적인 트릭 |
+| **§3.1** | **Encoder-Decoder<br/>비대칭 구조** | Encoder 는 양방향 Self-Attention 으로 입력 전체를 이해하고, Decoder 는 Masked Self-Attention + Cross-Attention 으로 한 토큰씩 출력. 이 비대칭이 후일 **BERT(Encoder-only) 와 GPT(Decoder-only)** 로 갈라지는 출발점 |
 
 ---
 
 ## 📂 프로젝트 구조 (Project Structure)
 
 ```text
-├─ results/                                    
-│  ├─ fig_01_transformer_architecture.png        # Encoder + Decoder 전체 구조도
-│  ├─ fig_02_qkv_search_engine.png               # Q·K·V 의미 검색 엔진 — Query/Key/Value 세 역할 (보조 도식)
-│  ├─ fig_03_scaled_dot_product_attention.png    # Q·K^T → ÷√d_k → softmax → ·V 5단계 수치 예시
-│  ├─ fig_04_multihead_attention.png             # 4 헤드 병렬 + Concat + W^O 흐름도
-│  ├─ fig_05_positional_encoding.png             # sinusoidal PE 히트맵 + 차원별 곡선
-│  ├─ fig_06_masked_attention.png                # 디코더 causal mask — 미래 토큰 −∞ 마스킹
-│  ├─ fig_07_training_curve.png                  # 25 epoch loss + val accuracy
-│  ├─ fig_08_multihead_pattern_comparison.png    # Layer × Head 별 attention 패턴 비교 (헤드별 다른 학습)
-│  └─ fig_09_attention_heatmap.png               # 학습 후 Encoder Self / Decoder Cross attention (Head 평균)
+├─ results/                                    # 학습/시각화 산출물
+│  ├─ fig_01_transformer_architecture.png     # Encoder + Decoder 전체 구조도
+│  ├─ fig_02_qkv_search_engine.png            # Q·K·V 의미 검색 엔진 — Query/Key/Value 세 역할 (보조 도식)
+│  ├─ fig_03_scaled_dot_product_attention.png # Q·K^T → ÷√d_k → softmax → ·V 5단계 수치 예시
+│  ├─ fig_04_multihead_attention.png          # 4 헤드 병렬 + Concat + W^O 흐름도
+│  ├─ fig_05_positional_encoding.png          # sinusoidal PE 히트맵 + 차원별 곡선
+│  ├─ fig_06_masked_attention.png             # 디코더 causal mask — 미래 토큰 −∞ 마스킹
+│  ├─ fig_07_training_curve.png               # 25 epoch loss + val accuracy
+│  ├─ fig_08_multihead_pattern_comparison.png # Layer × Head 별 attention 패턴 비교 (헤드별 다른 학습)
+│  └─ fig_09_attention_heatmap.png            # 학습 후 Encoder Self / Decoder Cross attention (Head 평균)
 ├─ src/
-│  └─ transformer.py                             # 통합 실행 스크립트 (모델 정의 + 학습 + 시각화)
+│  └─ transformer.py                          # 통합 실행 스크립트 (모델 정의 + 학습 + 시각화)
 ├─ .gitignore
 ├─ README.md
 └─ requirements.txt
