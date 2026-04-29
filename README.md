@@ -11,9 +11,9 @@
 
 ## 📌 프로젝트 요약 (Project Overview)
 
-2017년 Vaswani 등이 발표한 **"Attention Is All You Need"** 논문은 RNN/LSTM 없이 Self-Attention 만으로 시퀀스 변환이 가능하다는 것을 보여 주었고, 이 구조는 이후 **GPT · BERT · LLaMA 를 비롯한 거의 모든 현대 LLM 의 공통 뼈대**가 되었습니다. 이 포트폴리오는 그 Transformer 를 **외부 라이브러리(HuggingFace · `nn.Transformer` 등) 없이 PyTorch 의 기본 텐서 연산만으로 처음부터 구현**해, 핵심 부품 다섯 가지(PositionalEncoding · Scaled Dot-Product Attention · Multi-Head Attention · Encoder Layer · Decoder Layer)가 어떻게 맞물려 동작하는지를 코드 수준에서 검증한 작업입니다.
+2017년 Vaswani 등이 발표한 **"Attention Is All You Need"** 논문은 RNN/LSTM 없이 Self-Attention 만으로 시퀀스 변환이 가능하다는 것을 보여 주었고, 이 구조는 이후 **GPT · BERT · LLaMA 를 비롯한 거의 모든 현대 LLM 의 공통 뼈대**가 되었습니다. 이 포트폴리오는 그 Transformer 를 **외부 라이브러리(HuggingFace · `nn.Transformer` 등) 없이 PyTorch 의 기본 텐서 연산만으로 처음부터 구현**해, 핵심 부품 다섯 가지(PositionalEncoding · Scaled Dot-Product Attention · Multi-Head Attention · Encoder Layer · Decoder Layer)가 어떻게 맞물려 동작하는지를 코드 수준에서 검증하였습니다.
 
-학습이 실제로 되는지 확인하기 위해 **8자리 숫자 시퀀스를 역순으로 출력하는 토이 작업**을 골랐습니다. 이 작업은 정답 attention 패턴이 **anti-diagonal 형태로 명확히 떨어진다**는 특성이 있어, 모델이 "맞게 학습됐는지"를 attention 가중치만 봐도 한눈에 진단할 수 있다는 장점이 있습니다. 25 epoch 학습 후 **검증 정확도 98.4%** 까지 수렴했고, 학습된 cross-attention 히트맵이 실제로 anti-diagonal 패턴으로 자라난 것을 시각화로 확인했습니다 — 단순히 코드가 돌아가는 걸 넘어, **모델이 작업을 "어떻게" 풀고 있는지를 attention 으로 들여다볼 수 있다**는 점까지 검증한 셈입니다.
+학습이 실제로 되는지 확인하기 위해 **8자리 숫자 시퀀스를 역순으로 출력하는 토이 작업**을 선택하였습니다. 이 작업은 정답 attention 패턴이 **anti-diagonal 형태로 명확히 떨어진다**는 특성이 있어, 모델이 "맞게 학습됐는지"를 attention 가중치만 봐도 한눈에 진단할 수 있다는 장점이 있습니다. 25 epoch 학습 후 **검증 정확도 98.4%** 까지 수렴했고, 학습된 cross-attention 히트맵이 실제로 anti-diagonal 패턴으로 자라난 것을 시각화로 확인했습니다 — 단순히 코드가 돌아가는 걸 넘어, **모델이 작업을 "어떻게" 풀고 있는지를 attention 으로 들여다볼 수 있다**는 점까지 검증하였습니다.
 
 ---
 
