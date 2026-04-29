@@ -36,7 +36,7 @@
 │  ├─ fig_01_transformer_architecture.png        # Encoder + Decoder 전체 구조도
 │  ├─ fig_02_qkv_search_engine.png               # Q·K·V 의미 검색 엔진 — Query/Key/Value 세 역할 (보조 도식)
 │  ├─ fig_03_scaled_dot_product_attention.png    # Q·K^T → ÷√d_k → softmax → ·V 5단계 수치 예시
-│  ├─ fig_04_multihead_attention.png          # 4 헤드 병렬 + Concat + W^O 흐름도
+│  ├─ fig_04_multihead_attention.png             # 4 헤드 병렬 + Concat + W^O 흐름도
 │  ├─ fig_05_positional_encoding.png          # sinusoidal PE 히트맵 + 차원별 곡선
 │  ├─ fig_06_masked_attention.png             # 디코더 causal mask — 미래 토큰 −∞ 마스킹
 │  ├─ fig_07_training_curve.png               # 25 epoch loss + val accuracy
