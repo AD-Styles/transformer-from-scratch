@@ -49,18 +49,6 @@
 └─ requirements.txt
 ```
 
-### 🔁 재현 방법 (Reproduce from Scratch)
-
-코드와 `seed=42` 로 누구나 동일한 결과를 재현할 수 있습니다 — CPU 약 1분, GPU 수십 초 소요:
-
-```bash
-pip install -r requirements.txt
-python src/transformer.py --mode all     # 학습 + 9장 시각화 한 번에
-# 또는
-python src/transformer.py --mode train      # 25 epoch 학습만
-python src/transformer.py --mode visualize  # 캐시된 모델로 시각화만
-```
-
 ---
 
 ## 🏗️ Architecture & 핵심 구현 (Architecture & Core Implementation)
