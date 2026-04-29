@@ -23,7 +23,8 @@ Thumbs.db
 .env
 *.log
 
-# Note:
-# results/transformer_state.pt 는 의도적으로 커밋합니다.
-# 작은 토이 모델(< 1MB)이며, 캐시된 가중치로 재학습 없이
-# 바로 시각화를 돌릴 수 있게 하는 게 이 코드의 사용성 핵심입니다.
+# 학습 산출물 (git 추적 제외 — 코드와 seed=42 로 언제든 재생성 가능)
+# ML/MLOps 관행상 모델 가중치·학습 history 는 소스 저장소에 commit 하지 않음
+*.pt
+*.pth
+results/training_history.json
