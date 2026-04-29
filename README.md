@@ -39,7 +39,7 @@
 │  ├─ fig_04_multihead_attention.png             # 4 헤드 병렬 + Concat + W^O 흐름도
 │  ├─ fig_05_positional_encoding.png             # sinusoidal PE 히트맵 + 차원별 곡선
 │  ├─ fig_06_masked_attention.png                # 디코더 causal mask — 미래 토큰 −∞ 마스킹
-│  ├─ fig_07_training_curve.png               # 25 epoch loss + val accuracy
+│  ├─ fig_07_training_curve.png                  # 25 epoch loss + val accuracy
 │  ├─ fig_08_multihead_pattern_comparison.png # Layer × Head 별 attention 패턴 비교 (헤드별 다른 학습)
 │  └─ fig_09_attention_heatmap.png            # 학습 후 Encoder Self / Decoder Cross attention (Head 평균)
 ├─ src/
