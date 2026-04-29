@@ -32,18 +32,18 @@
 ## 📂 프로젝트 구조 (Project Structure)
 
 ```text
-├─ results/                                    # 학습/시각화 산출물
-│  ├─ fig_01_transformer_architecture.png     # Encoder + Decoder 전체 구조도
-│  ├─ fig_02_qkv_search_engine.png            # Q·K·V 의미 검색 엔진 — Query/Key/Value 세 역할 (보조 도식)
-│  ├─ fig_03_scaled_dot_product_attention.png # Q·K^T → ÷√d_k → softmax → ·V 5단계 수치 예시
-│  ├─ fig_04_multihead_attention.png          # 4 헤드 병렬 + Concat + W^O 흐름도
-│  ├─ fig_05_positional_encoding.png          # sinusoidal PE 히트맵 + 차원별 곡선
-│  ├─ fig_06_masked_attention.png             # 디코더 causal mask — 미래 토큰 −∞ 마스킹
-│  ├─ fig_07_training_curve.png               # 25 epoch loss + val accuracy
-│  ├─ fig_08_multihead_pattern_comparison.png # Layer × Head 별 attention 패턴 비교 (헤드별 다른 학습)
-│  └─ fig_09_attention_heatmap.png            # 학습 후 Encoder Self / Decoder Cross attention (Head 평균)
+├─ results/                                    
+│  ├─ fig_01_transformer_architecture.png        # Encoder + Decoder 전체 구조도
+│  ├─ fig_02_qkv_search_engine.png               # Q·K·V 의미 검색 엔진 — Query/Key/Value 세 역할 (보조 도식)
+│  ├─ fig_03_scaled_dot_product_attention.png    # Q·K^T → ÷√d_k → softmax → ·V 5단계 수치 예시
+│  ├─ fig_04_multihead_attention.png             # 4 헤드 병렬 + Concat + W^O 흐름도
+│  ├─ fig_05_positional_encoding.png             # sinusoidal PE 히트맵 + 차원별 곡선
+│  ├─ fig_06_masked_attention.png                # 디코더 causal mask — 미래 토큰 −∞ 마스킹
+│  ├─ fig_07_training_curve.png                  # 25 epoch loss + val accuracy
+│  ├─ fig_08_multihead_pattern_comparison.png    # Layer × Head 별 attention 패턴 비교 (헤드별 다른 학습)
+│  └─ fig_09_attention_heatmap.png               # 학습 후 Encoder Self / Decoder Cross attention (Head 평균)
 ├─ src/
-│  └─ transformer.py                          # 통합 실행 스크립트 (모델 정의 + 학습 + 시각화)
+│  └─ transformer.py                             # 통합 실행 스크립트 (모델 정의 + 학습 + 시각화)
 ├─ .gitignore
 ├─ README.md
 └─ requirements.txt
@@ -118,7 +118,7 @@
 
 ![multihead pattern](results/fig_08_multihead_pattern_comparison.png)
 
-> 학습 후 Decoder 의 cross-attention 을 layer × head 별로 펼쳐 본 결과. **Layer 2 의 Head 1·2·3** 는 역순 작업의 정답인 **anti-diagonal 패턴**(target 위치 i → source 위치 N−i 로 강하게 attend) 을 또렷하게 학습했고, Head 4 는 좀 더 흩어진 다른 패턴을 학습. **Layer 1** 은 입력 위치 5번 부근에 집중하는 특정 위치 선호 패턴을 학습. "헤드를 많이 두는 게 좋은 게 아니라, 헤드마다 다른 패턴을 학습한다" 는 논문의 주장 (Section 3.2.2) 이 작은 모델에서도 그대로 보임 — Architecture #3(Multi-Head Attention) 의 설명이 실제 학습 결과로 확인된 자리.
+> 학습 후 Decoder 의 cross-attention 을 layer × head 별로 펼쳐 본 결과. **Layer 2 의 Head 1·2·3** 는 역순 작업의 정답인 **anti-diagonal 패턴**(target 위치 i → source 위치 N−i 로 강하게 attend) 을 학습했고, Head 4 는 좀 더 흩어진 다른 패턴을 학습. **Layer 1** 은 입력 위치 5번 부근에 집중하는 특정 위치 선호 패턴을 학습. "헤드를 많이 두는 게 좋은 게 아니라, 헤드마다 다른 패턴을 학습한다" 는 논문의 주장 (Section 3.2.2) 이 작은 모델에서도 그대로 보임 — Architecture #3(Multi-Head Attention) 의 설명이 실제 학습 결과로 확인됨.
 
 ### 3. 학습된 Attention 가중치 — Encoder Self / Decoder Cross (Head 평균)
 
