@@ -21,19 +21,19 @@
 
 | <br/>논문 핵심 메커니즘 &emsp;&emsp;&emsp;&emsp; | 상세 목표 |
 | :--- | :--- |
-| **Self-Attention 으로 장거리 의존성 해결** *(Section 3.2.1, 4)* | RNN 의 순차 처리(O(n)) 한계를 벗어나 `softmax(Q·K^T / √d_k) · V` 한 식으로 모든 토큰을 동시에 조망. 토큰 간 경로 길이가 O(1) 로 단축돼 아무리 멀리 떨어진 단어라도 즉시 attend 가능 — 논문이 *"RNN/CNN 이 필요 없다"* 는 도발적 주장을 펼 수 있게 한 핵심 기여 |
-| **Multi-Head Attention 으로 부분 공간 분리** *(Section 3.2.2)* | d_model=64 를 4개 헤드(d_k=16) 로 쪼개 병렬 attention. 헤드마다 다른 부분 공간(subspace) 을 학습해 한 모델이 여러 종류의 관계를 동시에 포착 — *"h heads attend to information from different representation subspaces"* 가 논문이 강조하는 효과 |
-| **Positional Encoding 으로 순서 회복** *(Section 3.5)* | RNN 이 사라진 자리를 sin/cos 파동의 위치 임베딩으로 메움. 모든 위치가 서로 다른 64차원 벡터를 갖되 **가까운 위치끼리는 부드럽게 변하도록** 차원마다 주기를 다르게 설계 |
-| **Masked Self-Attention 으로 인과 관계 강제** *(Section 3.2.3)* | 디코더가 학습 시 정답 시퀀스 전체를 받지만 미래 토큰을 미리 보면 안 됨 — `M_ij = -∞ (if i < j)` 으로 가리고 softmax 를 통과시켜 autoregressive 생성을 보장하는 단순하지만 결정적인 트릭 |
-| **Encoder-Decoder 비대칭 구조** *(Section 3.1)* | Encoder 는 양방향 Self-Attention 으로 입력 전체를 이해하고, Decoder 는 Masked Self-Attention + Cross-Attention 으로 한 토큰씩 출력. 이 비대칭이 후일 **BERT(Encoder-only) 와 GPT(Decoder-only)** 로 갈라지는 출발점 |
+| **Self-Attention 으로 장거리 의존성 해결** *(Section 3.2.1, 4)* | RNN 처럼 한 단어씩 순서대로 처리하는 한계를 벗어나 `softmax(Q·K^T / √d_k) · V` 한 식으로 모든 토큰을 한 번에 봄. 토큰끼리의 연결 거리가 한 단계로 줄어들어 아무리 멀리 떨어진 단어라도 즉시 attend 가능 — 논문이 *"RNN/CNN 이 필요 없다"* 는 과감한 주장을 펼 수 있게 한 핵심 기여 |
+| **Multi-Head Attention 으로 부분 공간 분리** *(Section 3.2.2)* | d_model=64 를 4개 헤드(d_k=16) 로 쪼개 동시에 attention. 헤드마다 다른 작은 공간(subspace) 을 학습해 한 모델이 여러 종류의 관계를 동시에 잡아냄 — *"h heads attend to information from different representation subspaces"* 가 논문이 강조하는 효과 |
+| **Positional Encoding 으로 순서 회복** *(Section 3.5)* | RNN 이 사라진 자리를 sin/cos 파동의 위치 임베딩으로 채움. 모든 위치가 서로 다른 64차원 벡터를 갖되 **가까운 위치끼리는 부드럽게 변하도록** 차원마다 주기를 다르게 설계 |
+| **Masked Self-Attention 으로 인과 관계 강제** *(Section 3.2.3)* | 디코더가 학습할 때 정답 시퀀스 전체를 받지만 미래 토큰을 미리 보면 안 됨 — `M_ij = -∞ (if i < j)` 으로 가리고 softmax 를 통과시켜 autoregressive 생성을 보장하는 단순하지만 핵심적인 처리 |
+| **Encoder-Decoder 비대칭 구조** *(Section 3.1)* | Encoder 는 양방향 Self-Attention 으로 입력 전체를 이해하고, Decoder 는 Masked Self-Attention + Cross-Attention 으로 한 토큰씩 출력. 이 차이가 후일 **BERT(Encoder-only) 와 GPT(Decoder-only)** 로 갈라지는 출발점 |
 
 ---
 
 ## 📂 프로젝트 구조 (Project Structure)
 
 ```text
-├─ results/                                    
-│  ├─ fig_01_transformer_architecture.png       # Encoder + Decoder 전체 구조도
+├─ results/                                    # 학습/시각화 산출물
+│  ├─ fig_01_transformer_architecture.png     # Encoder + Decoder 전체 구조도
 │  ├─ fig_02_qkv_search_engine.png            # Q·K·V 의미 검색 엔진 — Query/Key/Value 세 역할 (보조 도식)
 │  ├─ fig_03_scaled_dot_product_attention.png # Q·K^T → ÷√d_k → softmax → ·V 5단계 수치 예시
 │  ├─ fig_04_multihead_attention.png          # 4 헤드 병렬 + Concat + W^O 흐름도
@@ -61,7 +61,7 @@
 | :---: |
 | ![architecture](results/fig_01_transformer_architecture.png) |
 
-> RNN 시대에는 단어를 왼쪽에서 오른쪽으로 하나씩 읽어야 해서 문장이 길어지면 앞부분 맥락을 잃어버리는 한계가 있었음. Transformer 는 **모든 토큰을 한 번에 조망** 해서 토큰 간 관계 강도(가중치) 를 직접 계산하는 방식으로 그 한계를 해결함. **Encoder** 는 입력을 받아 N=2 번 [Self-Attention → Feed-Forward] 를 반복하며 양방향 표현 벡터를 만들고, **Decoder** 는 (1) 자기 이전 토큰만 보는 **Masked Self-Attention** (2) Encoder 출력에 attend 하는 **Cross-Attention** (3) Feed-Forward 순서로 한 토큰씩 출력함. 이 비대칭이 후일 **BERT(Encoder-only) 와 GPT(Decoder-only)** 로 갈라지는 출발점이 됨.
+> RNN 시대에는 단어를 왼쪽에서 오른쪽으로 하나씩 읽어야 해서 문장이 길어지면 앞부분 맥락을 잃어버리는 한계가 있었음. Transformer 는 **모든 토큰을 한 번에 보면서** 토큰끼리 얼마나 관련이 있는지(가중치) 를 직접 계산하는 방식으로 그 한계를 해결함. **Encoder** 는 입력을 받아 N=2 번 [Self-Attention → Feed-Forward] 를 반복하며 문장 전체의 의미를 이해하고, **Decoder** 는 (1) 자기 이전 토큰만 보는 **Masked Self-Attention** (2) Encoder 결과를 참고하는 **Cross-Attention** (3) Feed-Forward 순서로 한 토큰씩 출력함. 이 차이가 후일 **BERT(Encoder-only) 와 GPT(Decoder-only)** 로 갈라지는 출발점이 됨.
 
 ### 2. Scaled Dot-Product Attention — 논문 식의 핵심 *(Section 3.2.1)*
 
@@ -69,13 +69,13 @@
 | :---: |
 | ![scaled dot product](results/fig_03_scaled_dot_product_attention.png) |
 
-> 논문의 한 줄 식 `Attention(Q, K, V) = softmax(Q·K^T / √d_k) · V` (Section 3.2.1) 를 (L=4, d_k=4) 작은 행렬로 단계별로 풀어 본 결과. **Query 가 모든 Key 와 내적해 "유사도" 를 만들고(②), `√d_k` 로 스케일을 가라앉힌 뒤(③), softmax 로 확률 분포로 바꾸고(④), 그 가중치로 Value 를 가중 평균(⑤)** — 행렬 한 번으로 모든 토큰 쌍의 관계를 동시에 계산한다는 점이 RNN 의 순차 처리(O(n)) 를 O(1) 경로 길이로 단축하는 자리. 논문이 이 식 하나로 *"Why Self-Attention"* 을 정당화한 핵심 자료 (Section 4).
+> 논문의 한 줄 식 `Attention(Q, K, V) = softmax(Q·K^T / √d_k) · V` (Section 3.2.1) 를 (L=4, d_k=4) 작은 행렬로 단계별로 풀어 본 결과. **Query 가 모든 Key 와 곱해서 "얼마나 비슷한지" 점수를 만들고(②), `√d_k` 로 점수의 크기를 줄인 뒤(③), softmax 로 0~1 사이 값으로 바꾸고(④), 그 가중치로 Value 를 평균(⑤)** — 한 번의 행렬 계산으로 모든 토큰끼리의 관계를 동시에 구할 수 있어, RNN 처럼 단어를 하나씩 읽어 갈 필요가 없어지는 핵심 부분. 논문이 이 식 하나로 *"Why Self-Attention"* 을 설명한 핵심 자료 (Section 4).
 >
 > <details><summary>📎 보조 도식 — Q·K·V 세 역할 직관 (fig_02)</summary>
 >
 > ![qkv search engine](results/fig_02_qkv_search_engine.png)
 >
-> 위 식을 풀기 전에 **W_q · W_k · W_v 가 같은 입력을 세 역할(Query / Key / Value) 로 분화시킨다** 는 점만 정리한 보조 도식. 검색 엔진의 쿼리·색인·문서 관계로 빗대 두면 식의 형태가 왜 그런지 직관이 잡힘 — 논문에는 없는 학습용 비유.
+> 위 식을 풀기 전에 **W_q · W_k · W_v 가 같은 입력을 세 가지 역할(Query / Key / Value) 로 나눈다** 는 점만 정리한 보조 도식. 검색 엔진에서 쿼리·색인·문서가 하는 역할에 빗대어 보면 식이 왜 이런 모양인지 이해하기 쉬움 — 논문에는 없는 학습용 비유.
 > </details>
 
 ### 3. Multi-Head Attention — 부분 공간 분리 *(Section 3.2.2)*
@@ -84,7 +84,7 @@
 | :---: |
 | ![multihead](results/fig_04_multihead_attention.png) |
 
-> 한 가지 attention 만 사용하면 모델이 단어 관계의 한쪽 측면에만 치우치게 됨. 차원을 4개로 쪼개면 각 헤드가 16차원(d_k=16) **부분 공간(representation subspace)** 에서 독립적으로 attention 을 계산함. 논문이 강조하는 핵심 (Section 3.2.2) 은 *"Multi-head attention allows the model to jointly attend to information from different representation subspaces"* — 헤드마다 다른 종류의 관계를 동시에 포착하라는 것. **헤드마다 다른 패턴이 실제로 학습되는지** 는 아래 "📊 학습 결과" 의 fig_08 에서 직접 확인함. 마지막에 4개 헤드 출력을 concat 한 뒤 `W^O` 로 다시 64차원으로 합쳐 다음 레이어에 넘김.
+> 한 가지 attention 만 쓰면 모델이 단어 관계의 한쪽 면만 보게 됨. 차원을 4개로 쪼개면 각 헤드가 16차원(d_k=16) 의 작은 공간에서 독립적으로 attention 을 계산함. 논문이 강조하는 핵심 (Section 3.2.2) 은 *"Multi-head attention allows the model to jointly attend to information from different representation subspaces"* — 헤드마다 다른 종류의 관계를 동시에 보라는 것. **헤드마다 다른 패턴이 실제로 학습되는지** 는 아래 "📊 학습 결과" 의 fig_08 에서 직접 확인함. 마지막에 4개 헤드 출력을 이어붙인 뒤 `W^O` 로 다시 64차원으로 합쳐 다음 레이어에 넘김.
 
 ### 4. Positional Encoding — sinusoidal 위치 임베딩 *(Section 3.5)*
 
@@ -92,7 +92,7 @@
 | :---: |
 | ![positional encoding](results/fig_05_positional_encoding.png) |
 
-> Transformer 는 모든 단어를 병렬 처리하기 때문에 그 자체로는 단어의 **순서를 전혀 알지 못함.** 논문은 이를 입력 임베딩에 sin/cos 파동을 더해 해결 (Section 3.5) — `PE(pos, 2i) = sin(pos / 10000^(2i/d))`, `PE(pos, 2i+1) = cos(pos / 10000^(2i/d))`. 왼쪽 히트맵에서 차원이 커질수록 파장이 길어지고, 오른쪽 라인 플롯은 4개 차원(0/4/16/32) 이 모두 다른 주기를 가짐을 보여 줌. 모든 위치가 **고유한 64차원 벡터를 갖되 가까운 위치끼리는 부드럽게 변하도록** 차원마다 주기를 다르게 둔 정교한 설계.
+> Transformer 는 모든 단어를 한 번에 처리하기 때문에 그 자체로는 단어의 **순서를 전혀 알지 못함.** 논문은 이를 입력 임베딩에 sin/cos 파동을 더해 해결 (Section 3.5) — `PE(pos, 2i) = sin(pos / 10000^(2i/d))`, `PE(pos, 2i+1) = cos(pos / 10000^(2i/d))`. 왼쪽 히트맵에서 차원이 커질수록 파장이 길어지고, 오른쪽 선 그래프는 4개 차원(0/4/16/32) 이 모두 다른 주기를 가짐을 보여 줌. 모든 위치가 **고유한 64차원 벡터를 갖되 가까운 위치끼리는 부드럽게 변하도록** 차원마다 주기를 다르게 둔 세심한 설계.
 
 ### 5. Masked Self-Attention — 인과 관계 강제 *(Section 3.2.3)*
 
@@ -100,7 +100,7 @@
 | :---: |
 | ![masked attention](results/fig_06_masked_attention.png) |
 
-> 디코더는 학습 시 정답 시퀀스 전체를 한 번에 입력받지만, **미래 토큰을 미리 보면 autoregressive 생성이 깨짐.** 논문의 처방 (Section 3.2.3) 은 단순함 — softmax 직전에 상삼각 위치(i < j) 를 `-∞` 로 채워 softmax 후 가중치가 0 이 되도록 강제. 왼쪽 행렬은 파란 셀(허용) 과 빨간 셀(금지) 로 마스크 구조를 시각화하고, 오른쪽은 실제 softmax 후 가중치 행렬로 미래 위치(i < j) 가 모두 0.00 으로 소거된 모습을 보여 줌. **단순한 트릭 한 줄이 autoregressive 생성의 인과 관계를 보장한다** 는 점이 인상적임.
+> 디코더는 학습할 때 정답 시퀀스 전체를 한 번에 입력받지만, **미래 토큰을 미리 보면 autoregressive 생성이 깨짐.** 논문의 해법 (Section 3.2.3) 은 단순함 — softmax 직전에 미래 위치(i < j) 를 `-∞` 로 채워 softmax 후 가중치가 0 이 되도록 만듦. 왼쪽 행렬은 파란 셀(허용) 과 빨간 셀(금지) 로 마스크 구조를 보여 주고, 오른쪽은 실제 softmax 후 가중치 행렬에서 미래 위치(i < j) 가 모두 0.00 으로 사라진 모습을 보여 줌. **단순한 한 줄짜리 처리로 autoregressive 생성의 인과 관계를 보장한다** 는 점이 인상적임.
 
 ---
 
@@ -112,19 +112,19 @@
 
 ![training curve](results/fig_07_training_curve.png)
 
-> Cross-Entropy Loss(파랑)는 2.29 → 0.16 까지 단조 감소했고, 검증 정확도(초록)는 28.9% → **98.4%** 로 빠르게 수렴함. epoch 1~5 구간에서는 토큰 단위 정확도가 천천히 오르지만, epoch 8 이후 급격히 가파르게 올라가는 모습 — 모델이 처음에는 단순 빈도만 학습하다가 어느 순간 attention 으로 위치 매핑을 "발견" 하는 학습 곡선의 전형적 모양.
+> Cross-Entropy Loss(파랑)는 2.29 → 0.16 까지 꾸준히 감소했고, 검증 정확도(초록)는 28.9% → **98.4%** 까지 빠르게 올라옴. epoch 1~5 구간에서는 정확도가 천천히 오르지만, epoch 8 이후 급격히 가파르게 올라가는 모습 — 모델이 처음에는 단순한 빈도만 외우다가 어느 순간 attention 으로 위치 규칙을 "발견" 하는 학습 곡선의 전형적인 모양.
 
 ### 2. Layer × Head 별 Cross-Attention 패턴 — 헤드마다 다른 부분 공간 학습 ⭐
 
 ![multihead pattern](results/fig_08_multihead_pattern_comparison.png)
 
-> 학습 후 Decoder 의 cross-attention 을 layer × head 별로 펼쳐 본 결과. **Layer 2 의 Head 1·2·3** 는 역순 작업의 정답인 **anti-diagonal 패턴**(target 위치 i → source 위치 N−i 로 강하게 attend) 을 또렷하게 학습했고, Head 4 는 좀 더 분산된 다른 패턴을 학습. **Layer 1** 은 입력 위치 5번 부근에 집중하는 일종의 위치적 priors 를 학습. "헤드를 많이 두는 게 좋은 게 아니라, 헤드마다 다른 패턴을 학습한다" 는 논문의 주장 (Section 3.2.2) 이 작은 모델에서도 가시적으로 재현 — Architecture #3(Multi-Head Attention) 의 직관이 학습 결과로 확인된 자리.
+> 학습 후 Decoder 의 cross-attention 을 layer × head 별로 펼쳐 본 결과. **Layer 2 의 Head 1·2·3** 는 역순 작업의 정답인 **anti-diagonal 패턴**(target 위치 i → source 위치 N−i 로 강하게 attend) 을 또렷하게 학습했고, Head 4 는 좀 더 흩어진 다른 패턴을 학습. **Layer 1** 은 입력 위치 5번 부근에 집중하는 특정 위치 선호 패턴을 학습. "헤드를 많이 두는 게 좋은 게 아니라, 헤드마다 다른 패턴을 학습한다" 는 논문의 주장 (Section 3.2.2) 이 작은 모델에서도 그대로 보임 — Architecture #3(Multi-Head Attention) 의 설명이 실제 학습 결과로 확인된 자리.
 
 ### 3. 학습된 Attention 가중치 — Encoder Self / Decoder Cross (Head 평균)
 
 ![attention heatmap](results/fig_09_attention_heatmap.png)
 
-> 입력 `[BOS, 3, 7, 1, 4, 9, 2, 8, 5, EOS]` 를 모델에 넣은 뒤 마지막 레이어의 attention 을 4개 헤드 평균해 본 결과. **Decoder Cross-Attention (오른쪽)** 의 anti-diagonal 패턴이 또렷함 — target 첫 토큰(5)이 source 마지막 디지트(5)에, target 두 번째 토큰(8)이 source 끝에서 두 번째 디지트(8)에 attend 하는 식. 모델이 "역순으로 출력하려면 입력 끝에서부터 가져오면 된다"는 규칙을 attention 만으로 학습했음을 보여 줌.
+> 입력 `[BOS, 3, 7, 1, 4, 9, 2, 8, 5, EOS]` 를 모델에 넣은 뒤 마지막 레이어의 attention 을 4개 헤드 평균해 본 결과. **Decoder Cross-Attention (오른쪽)** 의 anti-diagonal 패턴이 또렷함 — target 첫 토큰(5)이 source 마지막 숫자(5)에, target 두 번째 토큰(8)이 source 끝에서 두 번째 숫자(8)에 attend 하는 식. 모델이 "역순으로 출력하려면 입력 끝에서부터 가져오면 된다"는 규칙을 attention 만으로 학습했음을 보여 줌.
 
 ---
 
@@ -132,11 +132,11 @@
 
 | <br/>발견한 사실 &emsp;&emsp;&emsp;&emsp; | 관찰 내용과 적용 방법 |
 | :--- | :--- |
-| **Attention = 가중 평균의 일반화** | 식만 봤을 땐 복잡해 보였는데 직접 구현해 보니 결국 `softmax(Q·K^T / √d_k) · V` 한 줄. **각 query 가 모든 key 와의 유사도로 weights 를 만든 뒤 V 의 가중 평균을 취하는 것** 이라는 점이 한 번 잡히면 다른 모든 변형(Self / Cross / Masked) 도 같은 식의 변주임 |
-| **Multi-Head 의 진짜 의미** | "헤드가 많을수록 좋은가?" 의 답은 "헤드마다 다른 패턴을 학습할 때만 좋다." Layer 2 의 4개 헤드가 각자 anti-diagonal · 분산 · 특정 위치 priors 등 다른 모양을 학습한 결과(fig_08)가 그 증거. 같은 패턴 4번 학습하는 건 의미가 없음 |
-| **RNN 없이도 위치 정보 = sinusoidal PE** | 처음에는 "RNN 없이 어떻게 순서를 알지?" 가 직관적이지 않았는데, sin/cos 주기가 차원마다 다르게 설정돼서 **모든 위치가 고유한 64차원 벡터**를 갖게 된다는 점을 깨닫고 나니 자연스러워짐 (fig_05) |
-| **Masked Attention = 인과 관계 강제 장치** | 디코더 학습 시 정답 시퀀스 전체가 입력으로 들어가는데, 미래 토큰을 미리 보면 autoregressive 가 깨짐. `M_ij = -∞ (if i < j)` 마스킹으로 softmax 후 0 이 되도록 가리는 단순한 트릭이 **"현재까지의 정보만으로 다음을 예측"** 한다는 인과 관계를 보장 |
-| **학습 = anti-diagonal 의 등장** | 역순 작업에서 모델이 제대로 학습되면 cross-attention 이 anti-diagonal 로 자라난다는 점이 시각적으로 검증됨. attention 패턴은 단순한 부산물이 아니라 **모델이 작업을 어떻게 풀고 있는지를 보여 주는 진단 도구** |
+| **Attention = 가중 평균의 일반화** | 식만 봤을 땐 복잡해 보였는데 직접 구현해 보니 결국 `softmax(Q·K^T / √d_k) · V` 한 줄. **각 query 가 모든 key 와 비교해서 weights 를 만든 뒤 V 의 가중 평균을 취하는 것** 이라는 점이 한 번 잡히면 다른 모든 변형(Self / Cross / Masked) 도 같은 식의 응용임 |
+| **Multi-Head 의 진짜 의미** | "헤드가 많을수록 좋은가?" 의 답은 "헤드마다 다른 패턴을 학습할 때만 좋다." Layer 2 의 4개 헤드가 각자 anti-diagonal · 흩어진 패턴 · 특정 위치 선호 패턴 등 서로 다른 모양을 학습한 결과(fig_08)가 그 증거. 같은 패턴 4번 학습하는 건 의미가 없음 |
+| **RNN 없이도 위치 정보 = sinusoidal PE** | 처음에는 "RNN 없이 어떻게 순서를 알지?" 가 잘 와닿지 않았는데, sin/cos 주기가 차원마다 다르게 설정돼서 **모든 위치가 고유한 64차원 벡터**를 갖게 된다는 점을 깨닫고 나니 자연스러워짐 (fig_05) |
+| **Masked Attention = 인과 관계 강제 장치** | 디코더 학습할 때 정답 시퀀스 전체가 입력으로 들어가는데, 미래 토큰을 미리 보면 autoregressive 가 깨짐. `M_ij = -∞ (if i < j)` 마스킹으로 softmax 후 0 이 되도록 가리는 단순한 처리가 **"현재까지의 정보만으로 다음을 예측"** 한다는 인과 관계를 보장 |
+| **학습 = anti-diagonal 의 등장** | 역순 작업에서 모델이 제대로 학습되면 cross-attention 이 anti-diagonal 로 자라난다는 점이 눈으로 확인됨. attention 패턴은 단순한 부산물이 아니라 **모델이 작업을 어떻게 풀고 있는지를 보여 주는 진단 도구** |
 
 ---
 
