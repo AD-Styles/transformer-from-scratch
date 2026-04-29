@@ -43,14 +43,10 @@
 │  ├─ fig_08_multihead_pattern_comparison.png    # Layer × Head 별 attention 패턴 비교 (헤드별 다른 학습)
 │  └─ fig_09_attention_heatmap.png               # 학습 후 Encoder Self / Decoder Cross attention (Head 평균)
 ├─ src/
-│  └─ transformer.py                          # 통합 실행 스크립트 (모델 정의 + 학습 + 시각화)
+│  └─ transformer.py                             # 통합 실행 스크립트 (모델 정의 + 학습 + 시각화)
 ├─ .gitignore
 ├─ README.md
 └─ requirements.txt
-
-# 학습 시 자동 생성되는 로컬 캐시 (git 추적 제외):
-#   results/transformer_state.pt       — 학습된 모델 가중치 (PyTorch state_dict)
-#   results/training_history.json      — 25 epoch loss/val_acc 시계열
 ```
 
 ### 🔁 재현 방법 (Reproduce from Scratch)
