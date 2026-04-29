@@ -41,7 +41,7 @@
 │  ├─ fig_06_masked_attention.png                # 디코더 causal mask — 미래 토큰 −∞ 마스킹
 │  ├─ fig_07_training_curve.png                  # 25 epoch loss + val accuracy
 │  ├─ fig_08_multihead_pattern_comparison.png    # Layer × Head 별 attention 패턴 비교 (헤드별 다른 학습)
-│  └─ fig_09_attention_heatmap.png            # 학습 후 Encoder Self / Decoder Cross attention (Head 평균)
+│  └─ fig_09_attention_heatmap.png               # 학습 후 Encoder Self / Decoder Cross attention (Head 평균)
 ├─ src/
 │  └─ transformer.py                          # 통합 실행 스크립트 (모델 정의 + 학습 + 시각화)
 ├─ .gitignore
